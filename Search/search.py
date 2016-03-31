@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+
 
 class SearchProblem:
     """
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
     """
@@ -87,17 +89,23 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # The fringe in dfs works as FIFO, therefore choose stack as fringe
+    return genericSerchModel(problem, fringe=util.Stack())
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # The fringe in bfs works as LIFO, therefore choose queue as fringe
+    return genericSerchModel(problem, fringe=util.Queue())
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # The fringe in ucs has to consider the cost, therefore choose a PriorityQueue which can pop the lowest cost as fringe
+    return genericSerchModel(problem, fringre=util.PriorityQueue())
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -106,11 +114,49 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # like ucs, without a heuristic, the fringe structure are same
+    return genericSerchModel(problem, fringre=util.PriorityQueue(), heuristic)
 
+
+def genericSerchModel(problem, fringe=util.PriorityQueue(), heuristic=lambda stat, pro: 0):
+    """
+    This is a generic search method. By default, it woks as ucs, and works as a*
+    when given a heuristic function and bfs and dfs when in sepecific fringe structure
+    """
+    PriorityQueue = fringe.__class__.__name__ == 'PriorityQueue'  # If it is a PriorityQueue, we have to push 2 args instead of 1
+    if not fringe.isEmpty():  # in some case the fringe is not empty, so clear it
+        del fringe.heap[:]
+    if PriorityQueue:
+        fringe.push((problem.getStartState(), [], 0),
+                    heuristic(problem.getStartState(), problem))  # A PriorityQueue with cost
+    else:
+        # A normal structure queue or stack
+        fringe.push((problem.getStartState(), [], 0))
+    visited = util.Counter()  # a counter to record the states if reached
+
+    while not fringe.isEmpty():
+        currentstate, currentactions, currentcost = fringe.pop()
+        if visited[currentstate] >= 1:  # if reached, skip
+            continue
+        visited[currentstate] += 1  # makrked as reached
+        if problem.isGoalState(currentstate):
+            # if get the goal return the action list
+            return currentactions
+        successors = problem.getSuccessors(currentstate)
+        for nextstate, nextaction, nextcost in successors:
+            if visited[nextstate] <= 0:
+                totalcost = currentcost + nextcost  # cal the cost
+                if PriorityQueue:
+                    fringe.push(
+                        (nextstate, currentactions + [nextaction], totalcost), totalcost + heuristic(nextstate, problem))  # A PriorityQueue with cost
+                else:
+                    fringe.push(
+                        (nextstate, currentactions + [nextaction], totalcost))  # A normal structure queue or stack
+    return []
 
 # Abbreviations
 bfs = breadthFirstSearch
