@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -288,6 +288,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.StartState = (self.startingPosition,self.corners) # save the StartState, position, corners that not reached
 
     def getStartState(self):
         """
@@ -295,14 +296,14 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.StartState
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return len(state[1]) == 0 # just count the number of corners that not reached
 
     def getSuccessors(self, state):
         """
@@ -325,6 +326,17 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            x,y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                # hitting the wall
+                t = list(state[1]) #get the list
+                if (nextx,nexty) in t:
+                    #hitting the corner
+                    t.remove((nextx,nexty)) # remove hitted corner
+                nextState = ((nextx,nexty),	tuple(t))
+                successors.append((nextState, action, 0))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -360,6 +372,7 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    return len(state[1]) # count the number of corners that not reached
     return 0 # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
@@ -454,6 +467,39 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+    "***Node expanded 12517, 3.4 sec***"
+    #return foodGrid.count()
+
+    "***Node expanded 9551, 3.2 sec***"
+    """
+    r = 0
+    for food in foodGrid.asList():
+        d = abs(position[0] - food[0]) + abs(position[1] - food[1])
+        if r < d:
+            r = d
+    return r
+    """
+
+    "***Node expanded 8676,  8.2 sec***"
+    """
+    d = 0
+    for food in foodGrid.asList():
+        d = mazeDistance(position,food,problem.startingGameState)
+        return d
+    return d
+    """
+
+    "***Node expanded 4137, 29.0 sec***"
+    r = 0
+    for food in foodGrid.asList():
+        d = mazeDistance(position,food,problem.startingGameState)
+        """
+        mazeDistance function is trickery, because it is using bfs to find the distance.
+        """
+        if r < d:
+            r = d
+    return r
+    "***Node expanded 16688, 4.5 sec***"
     return 0
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -485,7 +531,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.bfs(problem) # each food is a goal, just find a optimal one
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -521,7 +567,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]# if it is a food, we got it!
 
 def mazeDistance(point1, point2, gameState):
     """
