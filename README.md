@@ -5,21 +5,22 @@ Personal solution to the project
 
 ### Project list
 
-- [x] Search 
+- [x] Search
+    + [Files](https://github.com/JoeyWNK/CS188-Artificial-Intelligence/tree/master/Search)
     + [*Questions*](http://ai.berkeley.edu/search.html)
-- [ ] Multi-Agent 
+- [ ] Multi-Agent
     + [*Questions*](http://ai.berkeley.edu/multiagent.html)
-- [ ] Reinforcement Learning 
+- [ ] Reinforcement Learning
     + [*Questions*](http://ai.berkeley.edu/reinforcement.html)
-- [ ] Ghostbusters 
+- [ ] Ghostbusters
     + [*Questions*](http://ai.berkeley.edu/tracking.html)
-- [ ] Classification 
+- [ ] Classification
     + [*Questions*](http://ai.berkeley.edu/classification.html)
 
 ### Required environment
 + Python 2
 
-### Tested environment 
+### Tested environment
 + Python 2.7.11
 
 ###### Note
