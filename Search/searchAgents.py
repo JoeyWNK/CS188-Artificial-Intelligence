@@ -495,6 +495,9 @@ def foodHeuristic(state, problem):
         d = mazeDistance(position,food,problem.startingGameState)
         """
         mazeDistance function is trickery, because it is using bfs to find the distance.
+        The acture node expanded is far more than it appears, and many of them are repeated.
+        For better performance, we should considering dynamic programming(which can save the distance)
+        or greedy algorithm(which is fast) to get the goal
         """
         if r < d:
             r = d
