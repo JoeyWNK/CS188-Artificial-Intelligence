@@ -104,7 +104,7 @@ def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     # The fringe in ucs has to consider the cost, therefore choose a PriorityQueue which can pop the lowest cost as fringe
-    return genericSerchModel(problem, fringre=util.PriorityQueue())
+    return genericSerchModel(problem, fringe=util.PriorityQueue())
 
 
 def nullHeuristic(state, problem=None):
@@ -119,7 +119,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     # like ucs, without a heuristic, the fringe structure are same
-    return genericSerchModel(problem, fringre=util.PriorityQueue(), heuristic)
+    return genericSerchModel(problem, fringe=util.PriorityQueue(), heuristic)
 
 
 def genericSerchModel(problem, fringe=util.PriorityQueue(), heuristic=lambda stat, pro: 0):
