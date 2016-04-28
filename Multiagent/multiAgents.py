@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -74,7 +74,31 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+
+        fd = [manhattanDistance( newPos, fp ) for fp in newFood.asList()]
+        gd = [manhattanDistance( newPos, g.getPosition() ) for g in newGhostStates]
+        nfd = 0
+        if len(fd) > 0:
+            nfd = min(fd)
+
+        if len(currentGameState.getFood().asList()) > len(fd):
+            nfd = 0
+
+        ngd = min(gd)
+        if ngd <= 1:
+            #print 'Threat !'
+            return -9999
+        if newScaredTimes > 0:
+            score = nfd + ngd
+        else:
+            score = nfd
+        #print score
+        if action == Directions.STOP:
+            score += 10
+
+
+        #print nfd,score,successorGameState.getScore() - score,action
+        return successorGameState.getScore() - score
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -129,7 +153,28 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        choose = None
+        peak = -9999
+        for action in gameState.getLegalActions(0):
+            state = gameState.generateSuccessor(0,action)
+            score = self.min_Max(state,self.depth*gameState.getNumAgents()-1,1)
+            #print score,action
+            if peak < score:
+                peak = score
+                choose = action
+        return choose
+
+    def min_Max(self,gameState,depth,agentIndex):
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            return self.evaluationFunction(gameState)
+        if agentIndex == gameState.getNumAgents():
+            agentIndex = 0
+        values = [self.min_Max(gameState.generateSuccessor(agentIndex,action),depth-1,agentIndex+1) for action in gameState.getLegalActions(agentIndex)]
+        if agentIndex == 0:
+            return max(values)
+        else:
+            return min(values)
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -141,7 +186,41 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        choose = None
+        peak = -9999
+        alpha = -9999
+        beta = 9999
+        for action in gameState.getLegalActions(0):
+            state = gameState.generateSuccessor(0,action)
+            score = self.AlphaBeta(state,self.depth*gameState.getNumAgents()-1,1,alpha,beta)
+            alpha = max(alpha, score)
+            #print score,action
+            if peak < score:
+                peak = score
+                choose = action
+        return choose
+
+    def AlphaBeta(self,gameState,depth,agentIndex,alpha,beta):
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            return self.evaluationFunction(gameState)
+        peak = 9999
+        if agentIndex == gameState.getNumAgents():
+            agentIndex = 0
+            peak = -9999
+        for action in gameState.getLegalActions(agentIndex):
+            value = self.AlphaBeta(gameState.generateSuccessor(agentIndex,action),depth-1,agentIndex+1,alpha,beta)
+            if agentIndex == 0:
+                if value > beta:
+                    return value
+                alpha = max(alpha, value)
+                peak = max(peak,value)
+                continue
+            elif value < alpha:
+                return value
+            beta = min(beta,value)
+            peak = min(peak,value)
+        return peak
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -156,7 +235,26 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        choose = None
+        peak = -9999
+        for action in gameState.getLegalActions(0):
+            state = gameState.generateSuccessor(0,action)
+            score = self.Expectimax(state,self.depth*gameState.getNumAgents()-1,1)
+            #print score,action
+            if peak < score:
+                peak = score
+                choose = action
+        return choose
+
+    def Expectimax(self,gameState,depth,agentIndex):
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            return self.evaluationFunction(gameState)
+        if agentIndex == gameState.getNumAgents():
+            agentIndex = 0
+        values = [self.Expectimax(gameState.generateSuccessor(agentIndex,action),depth-1,agentIndex+1) for action in gameState.getLegalActions(agentIndex)]
+        if agentIndex == 0:
+            return max(values)
+        return float(sum(values))/float(len(values))
 
 def betterEvaluationFunction(currentGameState):
     """
@@ -166,8 +264,21 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pos = currentGameState.getPacmanPosition()
+    fd = [manhattanDistance( pos, fp ) for fp in currentGameState.getFood().asList()]
+    gs = [g for g in currentGameState.getGhostStates()]
+    nfd = 0
+    if len(fd) > 0:
+        nfd = min(fd)
+
+    ngd = min([ manhattanDistance(pos, g.getPosition()) if g.scaredTimer < manhattanDistance(pos, g.getPosition()) else 9999 for g in gs ])
+    ScaredTimes = [g.scaredTimer for g in gs]
+    if ngd <= 0:
+        #print 'Threat !'
+        return -9999 #nerver worse than die
+    score = nfd
+        #print score
+    return currentGameState.getScore() - score
 
 # Abbreviation
 better = betterEvaluationFunction
-
