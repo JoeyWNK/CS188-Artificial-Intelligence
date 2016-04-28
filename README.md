@@ -9,7 +9,7 @@ Personal solution to the project
     + [Files](https://github.com/JoeyWNK/CS188-Artificial-Intelligence/tree/master/Search)
     + [*Questions*](http://ai.berkeley.edu/search.html)
 - [x] Multi-Agent
-    + [Files](https://github.com/JoeyWNK/CS188-Artificial-Intelligence/tree/master/multiAgent)
+    + [Files](https://github.com/JoeyWNK/CS188-Artificial-Intelligence/tree/master/Multiagent)
     + [*Questions*](http://ai.berkeley.edu/multiagent.html)
 - [ ] Reinforcement Learning
     + [*Questions*](http://ai.berkeley.edu/reinforcement.html)
