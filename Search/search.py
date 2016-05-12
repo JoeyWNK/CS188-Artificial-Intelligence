@@ -119,7 +119,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     # like ucs, without a heuristic, the fringe structure are same
-    return genericSerchModel(problem, fringe=util.PriorityQueue(), heuristic)
+    return genericSerchModel(problem, fringe=util.PriorityQueue(), heuristic=heuristic)
 
 
 def genericSerchModel(problem, fringe=util.PriorityQueue(), heuristic=lambda stat, pro: 0):
