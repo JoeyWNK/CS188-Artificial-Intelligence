@@ -158,19 +158,19 @@ class MinimaxAgent(MultiAgentSearchAgent):
         peak = -9999
         for action in gameState.getLegalActions(0):
             state = gameState.generateSuccessor(0,action)
-            score = self.min_Max(state,self.depth*gameState.getNumAgents()-1,1)
+            score = self.min_Max(state,self.depth*gameState.getNumAgents()-1)
             #print score,action
             if peak < score:
                 peak = score
                 choose = action
         return choose
 
-    def min_Max(self,gameState,depth,agentIndex):
+    def min_Max(self,gameState,depth):
         if gameState.isWin() or gameState.isLose() or depth == 0:
             return self.evaluationFunction(gameState)
-        if agentIndex == gameState.getNumAgents():
-            agentIndex = 0
-        values = [self.min_Max(gameState.generateSuccessor(agentIndex,action),depth-1,agentIndex+1) for action in gameState.getLegalActions(agentIndex)]
+        agentN = gameState.getNumAgents()
+        agentIndex = (agentN - (depth % gameState.getNumAgents())) % agentN
+        values = [self.min_Max(gameState.generateSuccessor(agentIndex,action),depth-1) for action in gameState.getLegalActions(agentIndex)]
         if agentIndex == 0:
             return max(values)
         else:
@@ -192,7 +192,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         beta = 9999
         for action in gameState.getLegalActions(0):
             state = gameState.generateSuccessor(0,action)
-            score = self.AlphaBeta(state,self.depth*gameState.getNumAgents()-1,1,alpha,beta)
+            score = self.AlphaBeta(state,self.depth*gameState.getNumAgents()-1,alpha,beta)
             alpha = max(alpha, score)
             #print score,action
             if peak < score:
@@ -200,15 +200,16 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 choose = action
         return choose
 
-    def AlphaBeta(self,gameState,depth,agentIndex,alpha,beta):
+    def AlphaBeta(self,gameState,depth,alpha,beta):
         if gameState.isWin() or gameState.isLose() or depth == 0:
             return self.evaluationFunction(gameState)
         peak = 9999
-        if agentIndex == gameState.getNumAgents():
-            agentIndex = 0
+        agentN = gameState.getNumAgents()
+        agentIndex = (agentN - (depth % gameState.getNumAgents())) % agentN
+        if agentIndex == 0:
             peak = -9999
         for action in gameState.getLegalActions(agentIndex):
-            value = self.AlphaBeta(gameState.generateSuccessor(agentIndex,action),depth-1,agentIndex+1,alpha,beta)
+            value = self.AlphaBeta(gameState.generateSuccessor(agentIndex,action),depth-1,alpha,beta)
             if agentIndex == 0:
                 if value > beta:
                     return value
@@ -239,19 +240,19 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         peak = -9999
         for action in gameState.getLegalActions(0):
             state = gameState.generateSuccessor(0,action)
-            score = self.Expectimax(state,self.depth*gameState.getNumAgents()-1,1)
+            score = self.Expectimax(state,self.depth*gameState.getNumAgents()-1)
             #print score,action
             if peak < score:
                 peak = score
                 choose = action
         return choose
 
-    def Expectimax(self,gameState,depth,agentIndex):
+    def Expectimax(self,gameState,depth):
         if gameState.isWin() or gameState.isLose() or depth == 0:
             return self.evaluationFunction(gameState)
-        if agentIndex == gameState.getNumAgents():
-            agentIndex = 0
-        values = [self.Expectimax(gameState.generateSuccessor(agentIndex,action),depth-1,agentIndex+1) for action in gameState.getLegalActions(agentIndex)]
+        agentN = gameState.getNumAgents()
+        agentIndex = (agentN - (depth % gameState.getNumAgents())) % agentN
+        values = [self.Expectimax(gameState.generateSuccessor(agentIndex,action),depth-1) for action in gameState.getLegalActions(agentIndex)]
         if agentIndex == 0:
             return max(values)
         return float(sum(values))/float(len(values))
